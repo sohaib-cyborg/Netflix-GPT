@@ -11,7 +11,7 @@ export const validateInput=(email,password,name)=>{
     if(!isPassword.test(password)){
         return "Password must be atleast 8 characters, must include an uppercase, lowercase and special case character!";
     }
-    if(name!==null && name!==undefined && !isname.test(isname)){
+    if(name!==null && name!==undefined && !isname.test(name)){
         return "Not a valid name!" 
     }
 

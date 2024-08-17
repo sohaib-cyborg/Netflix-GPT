@@ -1,8 +1,14 @@
 import { useRef, useState } from "react";
 import Header from "./Header";
 import { validateInput } from "../utils/validate";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "../utils/firebase";
 
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/userSlice";
 const Login = () => {
+  const dispatch = useDispatch();
+
   const [signToggle, setsignToggle] = useState(true);
   const [errorMessage,setErrorMessage] = useState(null);
   const name = useRef(null);
@@ -13,11 +19,60 @@ const Login = () => {
   };
 
   const validationPoint=()=>{
+    let message=null;
     if(!name.current){
-      setErrorMessage(validateInput(email.current.value,password.current.value,null));   
+      message=validateInput(email.current.value,password.current.value,null);   
     }else{
-   setErrorMessage(validateInput(email.current.value,password.current.value,name.current.value));
+      message= validateInput(email.current.value,password.current.value,name.current.value);
     }
+    setErrorMessage(message);
+  
+    if(message) return;
+  
+    if(!signToggle){
+      createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
+  .then((userCredential) => {
+    const user = userCredential.user;
+    updateProfile(user, {
+      displayName: name.current.value , photoURL: "https://occ-0-1917-58.1.nflxso.net/dnm/api/v6/vN7bi_My87NPKvsBoib006Llxzg/AAAABTZ2zlLdBVC05fsd2YQAR43J6vB1NAUBOOrxt7oaFATxMhtdzlNZ846H3D8TZzooe2-FT853YVYs8p001KVFYopWi4D4NXM.png?r=229"
+    }).then(() => {
+      const {uid,email,displayName,photoURL } = auth.currentUser;
+      dispatch(addUser({uid:uid,email:email,displayName:displayName,photoURL:photoURL}));
+       
+    }).catch((error) => {
+      // An error occurred
+      // ...
+      setErrorMessage(error.message);
+    });
+    
+    
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    setErrorMessage(errorCode+"-"+errorMessage);
+    console.log(errorMessage);
+    
+  });
+}
+  if(signToggle){
+    signInWithEmailAndPassword(auth, email.current.value, password.current.value)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    console.log(user);
+
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    setErrorMessage(errorCode+"-"+errorMessage);
+    
+  });
+
+  }  
   }
 
   return (
@@ -37,7 +92,7 @@ const Login = () => {
         <h1>{signToggle ? "Sign In" : "Sign Up"}</h1>
        {!signToggle && <input
           ref={name}
-          className="p-2 my-2 w-full rounded-sm bg-transparent text-gray-700 border border-solid border-gray-600"
+          className="p-2 my-2 w-full rounded-sm bg-transparent text-white border border-solid border-gray-600"
           type="text"
           placeholder="name"
         />}
