@@ -11,8 +11,12 @@ const Maincontainer = () => {
   console.log(original_title);  
   return (
     <div>
+       
         <VideoTitle titleData={original_title} overview={overview}/>
+        
+        <div>
         <Videotrailer movieId={id}/>
+        </div>
     </div>
   )
 }
