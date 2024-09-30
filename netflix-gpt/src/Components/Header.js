@@ -8,15 +8,19 @@ import { addUser, removeUser } from "../utils/userSlice";
 import { Logo } from "../utils/Constants"; 
 import { togglegpt } from "../utils/gptSlice";
 import { SUPPORTED_LANGUAGES } from "../utils/Constants";
+import { changeLanguage } from "../utils/config";
+
 const Header = () => {
   const navigate= useNavigate();
   const dispatch = useDispatch();
-  const lang = useRef();
+  const showGpt = useSelector((store)=>store?.gpt?.showGpt);  
   
   const toggleGpt=()=>{
     dispatch(togglegpt());
   }
-  
+ const handelLang=(e)=>{
+  dispatch(changeLanguage(e.target?.value));
+ }  
   useEffect(()=>{
   const unsubscribe= onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -37,7 +41,6 @@ const Header = () => {
 
   const [isHover,setIsHover] = useState(false);
   const user = useSelector((store)=>store.user);
-  console.log(user);
   const handleSignOut=()=>{
 signOut(auth).then(() => {
 navigate("/");  
@@ -57,10 +60,10 @@ navigate("/");
   {user &&( 
     <div className="flex">
     <div className="pt-2">
-    <select className="p-2 m-2 bg-gray-500 text-white text-lg cursor-pointer">{
+    <select onChange={handelLang} className="p-2 m-2 bg-gray-500 text-white text-lg cursor-pointer">{
     SUPPORTED_LANGUAGES.map((lang)=>
       (<option key={lang.identifier}
-      value={lang}
+      value={lang.identifier}
       >
         {lang.name}
       </option>
@@ -68,7 +71,7 @@ navigate("/");
     )
     }
     </select>
-    <button onClick={toggleGpt} className="bg-purple-900 py-2 px-6 m-6 rounded-md font-normal text-white">Gpt Search</button>
+    <button onClick={toggleGpt} className="bg-purple-900 py-2 px-6 m-6 rounded-md font-normal text-white">{showGpt===false?(<>GptSearch</>):(<>HomePage</>)}</button>
     </div>
     <div className="px-6 pt-4 m-6"
   onMouseEnter={()=>setIsHover(true)}

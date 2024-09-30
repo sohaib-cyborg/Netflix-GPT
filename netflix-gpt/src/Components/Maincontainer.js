@@ -8,7 +8,6 @@ const Maincontainer = () => {
   if(!moviedata) return;
   const {original_title,overview,id} = moviedata[0];
   
-  console.log(original_title);  
   return (
     <div>
        

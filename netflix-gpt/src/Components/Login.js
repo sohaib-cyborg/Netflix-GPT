@@ -76,7 +76,7 @@ const Login = () => {
           const errorCode = error.code;
           const errorMessage = error.message;
           setErrorMessage(errorCode + "-" + errorMessage);
-          console.log(errorMessage);
+
         });
     }
     if (signToggle) {
@@ -88,7 +88,7 @@ const Login = () => {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
-          console.log(user);
+        
 
           // ...
         })
